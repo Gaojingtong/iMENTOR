@@ -2,10 +2,6 @@
 
 The project of iMENTOR is conducted on the [TinyZero](https://github.com/Jiayi-Pan/TinyZero) environment with reinforcement learning tool [verl](https://github.com/volcengine/verl).
 
-Therefore, we retained the copyright of the TinyZero in the code.  
-
-We guarantee that the code complies with the double-blind standard, and the institutions mentioned in the copyright have nothing to do with this paper.
-
 # iMENTOR codes
 
 ## Installation
@@ -30,7 +26,27 @@ pip install wandb IPython matplotlib
 ## An example for running
 
 ```
+# First, please log in to your wandb with "wandb login"
+
+# Then download the base model into ./models/
 conda activate zero
+
+# we usually store our dataset at ./data/
 python ./examples/data_preprocess/countdown-4.py --local_dir {path_to_your_dataset}
-CUDA_VISIBLE_DEVICES=0,1,2,3 bash scripts/train_iMENTOR.sh
+
+# An example for iMENTOR with grpo
+bash scripts/iMENTOR_countdown-4_3b.sh
 ```
+
+## Note
+Due to the update of our code, we moved the reward network that was originally trained on CPU in the paper to the GPU. 
+However, due to the author's limited understanding of ray and distributed computing. At present, we are unable to incorporate the training of the reward network into the existing GPU resourse pool.
+Therefore, this project will additionally use 1 GPU to train the reward network separately (if the GPU number written in the scripts is 4, then actually 4 + 1 = 5 GPUs are used). This action will significantly enhance the overall training efficiency. 
+
+## Citation
+@article{gao2025navigate,
+  title={Navigate the unknown: Enhancing llm reasoning with intrinsic motivation guided exploration},
+  author={Gao, Jingtong and Pan, Ling and Wang, Yejing and Zhong, Rui and Lu, Chi and Cai, Qingpeng and Jiang, Peng and Zhao, Xiangyu},
+  journal={arXiv preprint arXiv:2505.17621},
+  year={2025}
+}
