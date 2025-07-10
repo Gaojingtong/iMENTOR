@@ -1,5 +1,7 @@
 # Statement
 
+This is an example code for paper [Navigate the Unknown: Enhancing LLM Reasoning with Intrinsic Motivation Guided Exploration](https://arxiv.org/pdf/2505.17621)
+
 The project of iMENTOR is conducted on the [TinyZero](https://github.com/Jiayi-Pan/TinyZero) environment with reinforcement learning tool [verl](https://github.com/volcengine/verl).
 
 # iMENTOR codes
