@@ -129,7 +129,6 @@ def compute_grpo_outcome_advantage(token_level_rewards: torch.Tensor,
         Returns: `(torch.Tensor)`
             shape: (bs, response_length)
     """
-    # token_level_rewards = token_level_rndrewards+token_level_rewards
     
     response_length = token_level_rewards.shape[-1]
     non_zero_mask = (token_level_rewards != 0)
@@ -139,14 +138,11 @@ def compute_grpo_outcome_advantage(token_level_rewards: torch.Tensor,
     id2score = defaultdict(list)
     id2mean = {}
     id2std = {}
-    # id2rnd = defaultdict(list)
-    # id2rndmean = defaultdict(list)
 
     with torch.no_grad():
         bsz = scores.shape[0]
         for i in range(bsz):
             id2score[index[i]].append(scores[i])
-            # id2rnd[index[i]].append(token_level_rndrewards[i])
         for idx in id2score:
             if len(id2score[idx]) == 1:
                 id2mean[idx] = torch.tensor(0.0)
@@ -154,16 +150,10 @@ def compute_grpo_outcome_advantage(token_level_rewards: torch.Tensor,
             elif len(id2score[idx]) > 1:
                 id2mean[idx] = torch.mean(torch.tensor(id2score[idx]))
                 id2std[idx] = torch.std(torch.tensor([id2score[idx]]))
-                # idxmean = int(id2mean[idx].item()*100)
-                # id2rndmean[idxmean].append(torch.mean(torch.tensor(id2rnd[idx])))
             else:
                 raise ValueError(f"no score in prompt index: {idx}")
         print("rollout: ", torch.tensor(id2score[idx]))
-        # for ind in id2rndmean.keys():
-            # id2rndmean[ind] = torch.tensor(id2rndmean[ind]).mean()
-        # print("id2rndmean: ", id2rndmean)
         for i in range(bsz):
-            # scores[i] = (scores[i] - id2mean[index[i]])/(id2std[index[i]]+epsilon)
             scores[i] = (scores[i] - id2mean[index[i]])/(id2std[index[i]]+epsilon)+token_level_rndrewards[i]
         scores = scores.unsqueeze(-1).tile([1, response_length]) * eos_mask
 
