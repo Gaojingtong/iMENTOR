@@ -16,29 +16,32 @@ def _select_rm_score_fn(data_source):
 
 
 class RNDNet(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size, layers):
         super().__init__()
         self.input_size = input_size
-        self.fn = nn.Sequential(
-                nn.Linear(self.input_size, 16),
-                nn.LeakyReLU(),
-                nn.Linear(16,8),
-                nn.LeakyReLU(),
-                nn.Linear(8,1),
-                nn.Sigmoid())
+        self.fn = nn.ModuleList([])
+        self.layers = layers
+        j = self.input_size
+        for  i in self.layers:
+            self.fn.append(nn.Linear(j, i))
+            self.fn.append(nn.LeakyReLU())
+            j=i
+        self.fn.append(nn.Linear(self.layers[-1], 1))
+        self.fn.append(nn.Sigmoid())
 
     def forward(self, x):
-        x = self.fn(x)
+        for func in self.fn:
+            x = func(x)
         return x
 
 
 class RNDReward(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size, layers, embedding):
         super().__init__()
-        self.emb = nn.Embedding(151936, 16)
-        self.input_size = input_size*16
-        self.target = RNDNet(self.input_size)
-        self.predictor = RNDNet(self.input_size)
+        self.emb = nn.Embedding(embedding[0], embedding[1])
+        self.input_size = input_size*embedding[1]
+        self.target = RNDNet(self.input_size, layers)
+        self.predictor = RNDNet(self.input_size, layers)
         self.bn0 = nn.BatchNorm1d(self.input_size)
     def forward(self, x):
         x = self.emb(x).view(-1, self.input_size)
@@ -55,10 +58,10 @@ class RNDReward(nn.Module):
 
 @ray.remote(num_gpus=1)
 class RNDActor:
-    def __init__(self):
+    def __init__(self, seq_len, layers, embedding, lr):
         self.device = torch.device("cuda:0")
-        self.rnd_reward = RNDReward(1280).to(self.device)
-        self.rnd_optimizer = torch.optim.AdamW(self.rnd_reward.parameters(), lr=0.001)
+        self.rnd_reward = RNDReward(seq_len, layers, embedding).to(self.device)
+        self.rnd_optimizer = torch.optim.AdamW(self.rnd_reward.parameters(), lr=lr)
 
     def train_one_batch(self, rnd_inputs):
         rnd_0, rnd_1 = self.rnd_reward(rnd_inputs.to(self.device))
@@ -74,11 +77,11 @@ class RewardManager():
     """The reward manager.
     """
 
-    def __init__(self, tokenizer, num_examine) -> None:
+    def __init__(self, tokenizer, num_examine, i_seq_len, i_layers, i_embedding, i_lr, i_scales) -> None:
         self.tokenizer = tokenizer
         self.num_examine = num_examine
-        self.rnd_trainer = RNDActor.remote()
-        self.scales = [40.0, 40.0, 1.0]
+        self.rnd_trainer = RNDActor.remote(i_seq_len, i_layers, i_embedding, i_lr)
+        self.scales = i_scales
 
     def __call__(self, data: DataProto):
         """We will expand this function gradually based on the available datasets"""
@@ -271,8 +274,12 @@ def main_task(config):
             raise NotImplementedError
         role_worker_mapping[Role.RewardModel] = ray.remote(RewardModelWorker)
         mapping[Role.RewardModel] = global_pool_id
-
-    reward_fn = RewardManager(tokenizer=tokenizer, num_examine=1)
+    
+    reward_fn = RewardManager(tokenizer=tokenizer, num_examine=1, 
+            i_seq_len=config.data.max_prompt_length+config.data.max_response_length, 
+            i_layers=config.imentor.layers, 
+            i_embedding=config.imentor.embedding, 
+            i_lr=config.imentor.lr, i_scales=config.imentor.scales)
 
     # Note that we always use function-based RM for validation
     val_reward_fn = ValRewardManager(tokenizer=tokenizer, num_examine=1)

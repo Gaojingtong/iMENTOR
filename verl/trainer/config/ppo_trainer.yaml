@@ -157,3 +157,10 @@ trainer:
   critic_warmup: 0
   default_hdfs_dir: ~/experiments/gsm8k/ppo/${trainer.experiment_name}
   default_local_dir: checkpoints/${trainer.project_name}/${trainer.experiment_name}
+
+imentor:
+  embedding: [151936, 16]
+  layers: [16, 8]
+  lr: 0.001
+  scales: [40.0, 40.0, 1.0]
+

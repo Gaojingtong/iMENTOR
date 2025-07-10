@@ -45,7 +45,7 @@ Due to the update of our code, we moved the reward network that was originally t
 
 However, due to the author's limited understanding of ray and distributed computing. At present, we are unable to incorporate the training of the reward network into the existing GPU resourse pool.
 
-Therefore, this project will additionally use 1 GPU to train the reward network separately (if the GPU number written in the scripts is 4, then actually 4 + 1 = 5 GPUs are used). This action will significantly enhance the overall training efficiency. 
+Therefore, this project will additionally use 1 GPU to train the reward network separately (if the GPU number written in the scripts is 4, then actually a maximum of 4 + 1 = 5 GPUs will be used in training). This action will significantly enhance the overall training efficiency. 
 
 ## Citation
 ```
