@@ -10,10 +10,16 @@ The project of iMENTOR is conducted on the [TinyZero](https://github.com/Jiayi-P
 
 ```
 conda create -n zero python=3.9
+
+# activate it: conda activate zero
+
 # install torch [or you can skip this step and let vllm to install the correct version for you]
 pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+
 # install vllm
 pip3 install vllm==0.6.3 # or you can install 0.5.4, 0.4.2 and 0.3.1
+
+# ray
 pip3 install ray
 
 # verl
@@ -21,6 +27,7 @@ pip install -e .
 
 # flash attention 2
 pip3 install flash-attn --no-build-isolation
+
 # quality of life
 pip install wandb IPython matplotlib
 ```
@@ -31,12 +38,12 @@ pip install wandb IPython matplotlib
 # First, please log in to your wandb with "wandb login"
 
 # Then download the base model into ./models/
-conda activate zero
+# if you haven't activated your environment: conda activate zero
 
 # We usually store our dataset at ./data/
 python ./examples/data_preprocess/countdown-4.py --local_dir {path_to_your_dataset}
 
-# An example for iMENTOR with grpo
+# An example for iMENTOR with grpo, you should first check the "DIR" paths in it before running
 bash scripts/iMENTOR_countdown-4_3b.sh
 ```
 

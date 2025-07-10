@@ -1,5 +1,5 @@
 set -x
-export DIR=/code/gaojingtong/iMENTOR
+export DIR=./
 export VLLM_ATTENTION_BACKEND=XFORMERS
 
 python3 -m verl.trainer.main_grpo \
