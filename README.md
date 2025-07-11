@@ -39,7 +39,7 @@ pip install wandb IPython matplotlib
 # We usually store our dataset at ./data/
 python ./examples/data_preprocess/countdown-4.py --local_dir {path_to_your_dataset}
 
-# An example for iMENTOR with grpo, you should first check the "DIR" paths in it before running
+# An example for iMENTOR with grpo, you should first check the variable settings in it before running
 bash scripts/iMENTOR_countdown-4_3b.sh
 ```
 
