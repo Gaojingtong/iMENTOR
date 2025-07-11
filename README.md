@@ -1,10 +1,6 @@
-# Statement
+# iMENTOR codes
 
 This is an example code for paper [Navigate the Unknown: Enhancing LLM Reasoning with Intrinsic Motivation Guided Exploration](https://arxiv.org/pdf/2505.17621)
-
-The project of iMENTOR is conducted on the [TinyZero](https://github.com/Jiayi-Pan/TinyZero) environment with reinforcement learning tool [verl](https://github.com/volcengine/verl).
-
-# iMENTOR codes
 
 ## Installation
 
@@ -53,6 +49,12 @@ Due to the update of our code, we moved the reward network that was originally t
 However, due to the author's limited understanding of ray and distributed computing. At present, we are unable to incorporate the training of the reward network into the existing GPU resourse pool.
 
 Therefore, this project will additionally use 1 GPU to train the reward network separately (if the GPU number written in the scripts is 4, then actually a maximum of 4 + 1 = 5 GPUs will be used in training). This action will significantly enhance the overall training efficiency. 
+
+## Acknowledge
+
+- The project of iMENTOR is conducted on the [TinyZero](https://github.com/Jiayi-Pan/TinyZero) base environment with reinforcement learning tool [verl](https://github.com/volcengine/verl).
+
+- We use Qwen2.5 series base model [Qwen2.5](https://github.com/QwenLM/Qwen2.5)
 
 ## Citation
 ```
